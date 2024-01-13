@@ -6,13 +6,13 @@ This service needs to provide an interface to query and save transactions extern
 
 ## Features
 
+- [x] Query by user address or tx hash
 - [ ] Record user's sending transactions, including the UserOperation details of the transactions
 - [ ] Periodic updates the status of the user's sending transactions
-- [x] Query by user address or tx hash
 
 ## Getting Started
 
-To get started with this template, follow these simple steps:
+To get started, follow these simple steps:
 
 1. Clone the repository:
    ```bash
