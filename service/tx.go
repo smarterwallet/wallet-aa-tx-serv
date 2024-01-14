@@ -10,21 +10,24 @@ import (
 )
 
 func SaveTransaction(strategyInfo *models.SavedTr) error {
-	if strategyInfo.UserOperationHash == "" || strategyInfo.Type == 0 {
-		return global.OtherError("Message is empty")
+	if strategyInfo.UserOperationHash == "" {
+		return global.OtherError("UserOperationHash is empty")
 	}
 
+	//TODO：查询chain表获取chainId
+	var chain models.Chain
+	err := dao.GetChainByNetworkId(&chain, strategyInfo.NetworkId)
+
 	type Param struct {
-		Jsonrpc string   `json:"jsonrpc"`
+		JsonRpc string   `json:"jsonrpc"`
 		Id      uint     `json:"id"`
 		Method  string   `json:"method"`
 		Params  []string `json:"params"`
 	}
 
-	url := "https://smarter-api-mumbai.web3idea.xyz/bundler/"
 	param := Param{
-		Jsonrpc: "2.0",
-		Id:      strategyInfo.Type,
+		JsonRpc: "2.0",
+		Id:      strategyInfo.NetworkId,
 		Method:  "eth_getUserOperationByHash",
 		Params:  []string{strategyInfo.UserOperationHash},
 	}
@@ -32,7 +35,7 @@ func SaveTransaction(strategyInfo *models.SavedTr) error {
 	if err != nil {
 		panic(err)
 	}
-	req, err := http.NewRequest("POST", url, bytes.NewBuffer(jsonParam))
+	req, err := http.NewRequest("POST", chain.BundlerApi, bytes.NewBuffer(jsonParam))
 	req.Header.Set("Content-Type", "application/json")
 	client := &http.Client{}
 	resp, err := client.Do(req)
@@ -46,7 +49,7 @@ func SaveTransaction(strategyInfo *models.SavedTr) error {
 	}
 	type Response struct {
 		Id              uint   `json:"id"`
-		Jsonrpc         string `json:"jsonrpc"`
+		JsonRpc         string `json:"jsonrpc"`
 		Result          Result `json:"result"`
 		Entrypoint      string `json:"entrypoint"`
 		BlockNumber     uint   `json:"blockNumber"`
@@ -70,8 +73,9 @@ func SaveTransaction(strategyInfo *models.SavedTr) error {
 		Sender:            response.Result.UserOperation.Sender,
 		EntryPointAddress: response.Entrypoint,
 		UserOperation:     json.RawMessage(u),
-		Type:              response.Id,
+		Type:              strategyInfo.Type,
 		Status:            0,
+		ChainId:           chain.ID,
 	}
 	return dao.SaveTransaction(tx)
 }
