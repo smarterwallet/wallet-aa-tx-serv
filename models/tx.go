@@ -22,7 +22,7 @@ var (
 type Transaction struct {
 	gorm.Model
 	BlockHash         string          `gorm:"comment:交易所在块Hash" json:"block_hash"`
-	BlockNumber       string          `gorm:"comment:交易所在块高度" json:"block_number"`
+	BlockNumber       uint            `gorm:"comment:交易所在块高度" json:"block_number"`
 	TxHash            string          `gorm:"comment:交易Hash" json:"tx_hash"`
 	Sender            string          `gorm:"comment:发送方" json:"sender"`
 	EntryPointAddress string          `gorm:"comment:接收方" json:"entry_point_address"`
@@ -33,4 +33,23 @@ type Transaction struct {
 
 func (Transaction) TableName() string {
 	return "transaction"
+}
+
+type SavedTr struct {
+	Type              uint   `json:"type"`
+	UserOperationHash string `json:"userOperationHash"`
+}
+
+type UserOperation struct {
+	Sender               string `json:"sender"`
+	Nonce                string `json:"nonce"`
+	InitCode             string `json:"initCode"`
+	CallData             string `json:"callData"`
+	CallGasLimit         string `json:"callGasLimit"`
+	VerificationGasLimit string `json:"verificationGasLimit"`
+	PreVerificationGas   string `json:"preVerificationGas"`
+	MaxFeePerGas         string `json:"maxFeePerGas"`
+	MaxPriorityFeePerGas string `json:"maxPriorityFeePerGas"`
+	PaymasterAndData     string `json:"paymasterAndData"`
+	Signature            string `json:"signature"`
 }

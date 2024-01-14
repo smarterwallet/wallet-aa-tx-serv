@@ -26,7 +26,7 @@ func GetTransaction(ctx *gin.Context) {
 
 func SaveTransaction(ctx *gin.Context) {
 	var (
-		reqUser models.Transaction
+		reqUser models.SavedTr
 	)
 
 	ctx.Bind(&reqUser)
