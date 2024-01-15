@@ -23,20 +23,41 @@ var (
 	TransactionTypeFromAutTrading = 2
 )
 
+// TODO:修改gorm标签
 // Transaction 交易信息
 type Transaction struct {
 	gorm.Model
 	ChainId           uint            `gorm:"comment:chain表id" json:"chainId,omitempty"`
-	BlockHash         string          `gorm:"comment:交易所在块Hash" json:"blockHash"`
-	BlockNumber       string          `gorm:"comment:交易所在块高度" json:"blockNumber"`
-	TxHash            string          `gorm:"comment:交易Hash" json:"txHash"`
+	BlockHash         string          `gorm:"comment:交易所在块Hash" json:"block_hash"`
+	BlockNumber       uint            `gorm:"comment:交易所在块高度" json:"block_number"`
+	TxHash            string          `gorm:"comment:交易Hash" json:"tx_hash"`
 	Sender            string          `gorm:"comment:发送方" json:"sender"`
-	EntryPointAddress string          `gorm:"comment:接收方" json:"entryPointAddress"`
-	UserOperation     json.RawMessage `gorm:"comment:op详情" json:"userOperation"`
+	EntryPointAddress string          `gorm:"comment:接收方" json:"entry_point_address"`
+	UserOperation     json.RawMessage `gorm:"comment:op详情" json:"user_operation"`
 	Type              uint            `gorm:"not null;comment:类型" json:"type"`
 	Status            uint            `gorm:"not null;comment:状态" json:"status"`
 }
 
 func (Transaction) TableName() string {
 	return "transaction"
+}
+
+type SavedTr struct {
+	NetworkId         uint   `json:"networkId"`
+	Type              uint   `json:"type"`
+	UserOperationHash string `json:"userOperationHash"`
+}
+
+type UserOperation struct {
+	Sender               string `json:"sender"`
+	Nonce                string `json:"nonce"`
+	InitCode             string `json:"initCode"`
+	CallData             string `json:"callData"`
+	CallGasLimit         string `json:"callGasLimit"`
+	VerificationGasLimit string `json:"verificationGasLimit"`
+	PreVerificationGas   string `json:"preVerificationGas"`
+	MaxFeePerGas         string `json:"maxFeePerGas"`
+	MaxPriorityFeePerGas string `json:"maxPriorityFeePerGas"`
+	PaymasterAndData     string `json:"paymasterAndData"`
+	Signature            string `json:"signature"`
 }
