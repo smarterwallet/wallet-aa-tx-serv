@@ -48,25 +48,7 @@ func SaveTransaction(info *models.SavedTr) error {
 		return global.OtherError("UserOperationHash already exists")
 	}
 
-	param := BundlerRequestParam{
-		JsonRpc: "2.0",
-		Id:      info.NetworkId,
-		Method:  "eth_getUserOperationByHash",
-		Params:  []string{info.UserOperationHash},
-	}
-
-	response := &GetOPByHashResponse{}
-	res, err := httplib.PostInto(chain.BundlerApi, param, map[string]string{}, &response)
-	if err != nil {
-		return err
-	}
-	if res.StatusCode != 200 {
-		return global.OtherError(fmt.Sprintf("bundler api response status is %v", res.StatusCode))
-	}
-
-	if response == nil || response.Result == nil || response.Result.UserOperation == nil {
-		return global.OtherError("UserOperation is empty or expired")
-	}
+	response, err := getUserOperationByHash(chain.BundlerApi, info.UserOperationHash)
 
 	tx := &models.Transaction{
 		BlockHash:         response.Result.BlockHash,
@@ -81,6 +63,30 @@ func SaveTransaction(info *models.SavedTr) error {
 		ChainId:           chain.ID,
 	}
 	return dao.SaveTransaction(tx)
+}
+
+func getUserOperationByHash(api string, hash string) (*GetOPByHashResponse, error) {
+	param := BundlerRequestParam{
+		JsonRpc: "2.0",
+		Id:      1,
+		Method:  "eth_getUserOperationByHash",
+		Params:  []string{hash},
+	}
+
+	response := &GetOPByHashResponse{}
+	res, err := httplib.PostInto(api, param, map[string]string{}, &response)
+	if err != nil {
+		return nil, err
+	}
+	if res.StatusCode != 200 {
+		return nil, global.OtherError(fmt.Sprintf("bundler api response status is %v", res.StatusCode))
+	}
+
+	if response == nil || response.Result == nil || response.Result.UserOperation == nil {
+		return nil, global.OtherError("UserOperation is empty or expired")
+	}
+
+	return response, nil
 }
 
 func FindTransaction(strategyInfo *models.Transaction) ([]models.Transaction, error) {
