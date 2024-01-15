@@ -2,28 +2,28 @@ package models
 
 import (
 	"encoding/json"
+	"errors"
 	"gorm.io/gorm"
 )
 
 var (
 	// TransactionStatusInit 交易状态初始化
-	TransactionStatusInit = 0
+	TransactionStatusInit = uint(0)
 	// TransactionStatusSuccess 交易状态成功
-	TransactionStatusSuccess = 1
+	TransactionStatusSuccess = uint(1)
 	// TransactionStatusFail 交易状态失败
-	TransactionStatusFail = 2
+	TransactionStatusFail = uint(2)
 	// TransactionStatusRollback 交易所在区块回滚
-	TransactionStatusRollback = 3
+	TransactionStatusRollback = uint(3)
 	// TransactionStatusUnKnow 交易状态无法判断
-	TransactionStatusUnKnow = 4
+	TransactionStatusUnKnow = uint(4)
 
 	// TransactionTypeFromDemandAbstraction 交易类型来自需求抽象
-	TransactionTypeFromDemandAbstraction = 1
+	TransactionTypeFromDemandAbstraction = uint(1)
 	// TransactionTypeFromAutTrading 交易类型来自自动交易
-	TransactionTypeFromAutTrading = 2
+	TransactionTypeFromAutTrading = uint(2)
 )
 
-// TODO:修改gorm标签
 // Transaction 交易信息
 type Transaction struct {
 	gorm.Model
@@ -33,13 +33,36 @@ type Transaction struct {
 	TxHash            string          `gorm:"comment:交易Hash" json:"tx_hash"`
 	Sender            string          `gorm:"comment:发送方" json:"sender"`
 	EntryPointAddress string          `gorm:"comment:接收方" json:"entry_point_address"`
-	UserOperation     json.RawMessage `gorm:"comment:op详情" json:"user_operation"`
+	UserOperationHash string          `gorm:"comment:op hash" json:"user_operation_hash"`
+	UserOperation     *UserOperation  `gorm:"-" json:"user_operation"`
+	UserOperationJson json.RawMessage `gorm:"comment:op详情;type:json" json:"user_operation_json"`
 	Type              uint            `gorm:"not null;comment:类型" json:"type"`
 	Status            uint            `gorm:"not null;comment:状态" json:"status"`
 }
 
 func (Transaction) TableName() string {
 	return "transaction"
+}
+
+func (s *Transaction) BeforeSave(tx *gorm.DB) (err error) {
+	if s.UserOperation != nil {
+		bytes, err := json.Marshal(s.UserOperation)
+		if err != nil {
+			return errors.New("failed to marshal Tokens field to JSON")
+		}
+		s.UserOperationJson = bytes
+	}
+	return
+}
+
+func (s *Transaction) AfterFind(tx *gorm.DB) (err error) {
+	if s.UserOperationJson != nil {
+		err = json.Unmarshal(s.UserOperationJson, &s.UserOperation)
+		if err != nil {
+			return errors.New("failed to unmarshal Tokens field from JSON")
+		}
+	}
+	return
 }
 
 type SavedTr struct {

@@ -1,80 +1,83 @@
 package service
 
 import (
-	"bytes"
-	"encoding/json"
+	"fmt"
 	"go-gin-gorm-starter/dao"
 	"go-gin-gorm-starter/global"
 	"go-gin-gorm-starter/models"
-	"net/http"
+	"go-gin-gorm-starter/utils/httplib"
 )
 
-func SaveTransaction(strategyInfo *models.SavedTr) error {
-	if strategyInfo.UserOperationHash == "" {
+type GetOPByHashResult struct {
+	Entrypoint      string                `json:"entrypoint"`
+	BlockNumber     uint                  `json:"blockNumber"`
+	BlockHash       string                `json:"blockHash"`
+	TransactionHash string                `json:"transactionHash"`
+	UserOperation   *models.UserOperation `json:"userOperation"`
+}
+
+type GetOPByHashResponse struct {
+	Id      uint               `json:"id"`
+	JsonRpc string             `json:"jsonrpc"`
+	Result  *GetOPByHashResult `json:"result"`
+}
+
+type BundlerRequestParam struct {
+	JsonRpc string   `json:"jsonrpc"`
+	Id      uint     `json:"id"`
+	Method  string   `json:"method"`
+	Params  []string `json:"params"`
+}
+
+func SaveTransaction(info *models.SavedTr) error {
+	if info.UserOperationHash == "" {
 		return global.OtherError("UserOperationHash is empty")
 	}
 
-	//TODO：查询chain表获取chainId
 	var chain models.Chain
-	err := dao.GetChainByNetworkId(&chain, strategyInfo.NetworkId)
+	err := dao.GetChainByNetworkId(&chain, info.NetworkId)
 
-	type Param struct {
-		JsonRpc string   `json:"jsonrpc"`
-		Id      uint     `json:"id"`
-		Method  string   `json:"method"`
-		Params  []string `json:"params"`
+	resInDb, err := dao.FindTransaction(&models.Transaction{
+		ChainId:           chain.ID,
+		UserOperationHash: info.UserOperationHash,
+	})
+	if err != nil {
+		return err
+	}
+	if len(resInDb) > 0 {
+		return global.OtherError("UserOperationHash already exists")
 	}
 
-	param := Param{
+	param := BundlerRequestParam{
 		JsonRpc: "2.0",
-		Id:      strategyInfo.NetworkId,
+		Id:      info.NetworkId,
 		Method:  "eth_getUserOperationByHash",
-		Params:  []string{strategyInfo.UserOperationHash},
+		Params:  []string{info.UserOperationHash},
 	}
-	jsonParam, err := json.Marshal(param)
-	if err != nil {
-		panic(err)
-	}
-	req, err := http.NewRequest("POST", chain.BundlerApi, bytes.NewBuffer(jsonParam))
-	req.Header.Set("Content-Type", "application/json")
-	client := &http.Client{}
-	resp, err := client.Do(req)
-	if err != nil {
-		panic(err)
-	}
-	defer resp.Body.Close()
 
-	type Result struct {
-		UserOperation models.UserOperation `json:"userOperation"`
-	}
-	type Response struct {
-		Id              uint   `json:"id"`
-		JsonRpc         string `json:"jsonrpc"`
-		Result          Result `json:"result"`
-		Entrypoint      string `json:"entrypoint"`
-		BlockNumber     uint   `json:"blockNumber"`
-		BlockHash       string `json:"blockHash"`
-		TransactionHash string `json:"transactionHash"`
-	}
-	var response Response
-	err = json.NewDecoder(resp.Body).Decode(&response)
+	response := &GetOPByHashResponse{}
+	res, err := httplib.PostInto(chain.BundlerApi, param, map[string]string{}, &response)
 	if err != nil {
-		panic(err)
+		return err
 	}
-	u, err := json.Marshal(response.Result.UserOperation)
-	if err != nil {
-		panic(err)
+	if res.StatusCode != 200 {
+		return global.OtherError(fmt.Sprintf("bundler api response status is %v", res.StatusCode))
+	}
+
+	if response == nil || response.Result == nil || response.Result.UserOperation == nil {
+		return global.OtherError("UserOperation is empty or expired")
 	}
 
 	tx := &models.Transaction{
-		BlockHash:         response.BlockHash,
-		BlockNumber:       response.BlockNumber,
-		TxHash:            response.TransactionHash,
+		BlockHash:         response.Result.BlockHash,
+		BlockNumber:       response.Result.BlockNumber,
+		TxHash:            response.Result.TransactionHash,
 		Sender:            response.Result.UserOperation.Sender,
-		EntryPointAddress: response.Entrypoint,
-		UserOperation:     json.RawMessage(u),
-		Type:              strategyInfo.Type,
-		Status:            0,
+		EntryPointAddress: response.Result.Entrypoint,
+		UserOperation:     response.Result.UserOperation,
+		UserOperationHash: info.UserOperationHash,
+		Type:              info.Type,
+		Status:            models.TransactionStatusInit,
 		ChainId:           chain.ID,
 	}
 	return dao.SaveTransaction(tx)
