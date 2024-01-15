@@ -1,8 +1,8 @@
 package dao
 
 import (
-	"go-gin-gorm-starter/global"
-	"go-gin-gorm-starter/models"
+	"wallet-aa-tx-serv/global"
+	"wallet-aa-tx-serv/models"
 )
 
 func SaveTransaction(strategyInfo *models.Transaction) error {

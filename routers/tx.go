@@ -2,7 +2,7 @@ package routers
 
 import (
 	"github.com/gin-gonic/gin"
-	"go-gin-gorm-starter/controller"
+	"wallet-aa-tx-serv/controller"
 )
 
 func InitStrategyInfoRouter(router *gin.RouterGroup) {

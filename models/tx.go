@@ -24,6 +24,26 @@ var (
 	TransactionTypeFromAutTrading = uint(2)
 )
 
+type SavedTr struct {
+	NetworkId         uint   `json:"networkId"`
+	Type              uint   `json:"type"`
+	UserOperationHash string `json:"userOperationHash"`
+}
+
+type UserOperation struct {
+	Sender               string `json:"sender"`
+	Nonce                string `json:"nonce"`
+	InitCode             string `json:"initCode"`
+	CallData             string `json:"callData"`
+	CallGasLimit         string `json:"callGasLimit"`
+	VerificationGasLimit string `json:"verificationGasLimit"`
+	PreVerificationGas   string `json:"preVerificationGas"`
+	MaxFeePerGas         string `json:"maxFeePerGas"`
+	MaxPriorityFeePerGas string `json:"maxPriorityFeePerGas"`
+	PaymasterAndData     string `json:"paymasterAndData"`
+	Signature            string `json:"signature"`
+}
+
 // Transaction 交易信息
 type Transaction struct {
 	gorm.Model
@@ -63,24 +83,4 @@ func (s *Transaction) AfterFind(tx *gorm.DB) (err error) {
 		}
 	}
 	return
-}
-
-type SavedTr struct {
-	NetworkId         uint   `json:"networkId"`
-	Type              uint   `json:"type"`
-	UserOperationHash string `json:"userOperationHash"`
-}
-
-type UserOperation struct {
-	Sender               string `json:"sender"`
-	Nonce                string `json:"nonce"`
-	InitCode             string `json:"initCode"`
-	CallData             string `json:"callData"`
-	CallGasLimit         string `json:"callGasLimit"`
-	VerificationGasLimit string `json:"verificationGasLimit"`
-	PreVerificationGas   string `json:"preVerificationGas"`
-	MaxFeePerGas         string `json:"maxFeePerGas"`
-	MaxPriorityFeePerGas string `json:"maxPriorityFeePerGas"`
-	PaymasterAndData     string `json:"paymasterAndData"`
-	Signature            string `json:"signature"`
 }

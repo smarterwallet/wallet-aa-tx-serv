@@ -4,13 +4,13 @@ import (
 	"fmt"
 	log "github.com/cihub/seelog"
 	"github.com/spf13/viper"
-	"go-gin-gorm-starter/models"
 	"gorm.io/driver/mysql"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 	"gorm.io/gorm/logger"
 	"os"
 	"strings"
+	"wallet-aa-tx-serv/models"
 )
 
 func init() {

@@ -1,4 +1,4 @@
-module go-gin-gorm-starter
+module wallet-aa-tx-serv
 
 go 1.18
 

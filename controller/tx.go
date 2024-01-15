@@ -2,10 +2,10 @@ package controller
 
 import (
 	"github.com/gin-gonic/gin"
-	"go-gin-gorm-starter/models"
-	"go-gin-gorm-starter/service"
-	"go-gin-gorm-starter/utils/gin2"
 	"strconv"
+	"wallet-aa-tx-serv/models"
+	"wallet-aa-tx-serv/service"
+	"wallet-aa-tx-serv/utils/gin2"
 )
 
 func GetTransaction(ctx *gin.Context) {

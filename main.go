@@ -5,14 +5,14 @@ import (
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/spf13/viper"
-	_ "go-gin-gorm-starter/config"
-	_ "go-gin-gorm-starter/global"
-	"go-gin-gorm-starter/routers"
 	"net/http"
 	"os"
 	"os/signal"
 	"syscall"
 	"time"
+	_ "wallet-aa-tx-serv/config"
+	_ "wallet-aa-tx-serv/global"
+	"wallet-aa-tx-serv/routers"
 )
 
 func main() {
