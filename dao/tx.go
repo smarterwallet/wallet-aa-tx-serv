@@ -19,6 +19,12 @@ func FindTransaction(info *models.Transaction) ([]models.Transaction, error) {
 	return infos, err
 }
 
+func FindTransactionNeededToCheckStatus() ([]models.Transaction, error) {
+	var infos []models.Transaction
+	err := global.DB.Where("status != 1 and status != 2").Find(&infos).Error
+	return infos, err
+}
+
 func UpdateTransaction(info *models.Transaction) (*models.Transaction, error) {
 	err := global.DB.Where("id = ?", info.ID).Updates(info).Error
 	return info, err

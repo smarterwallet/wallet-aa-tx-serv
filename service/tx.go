@@ -46,6 +46,10 @@ func FindTransaction(strategyInfo *models.Transaction) ([]models.Transaction, er
 	return dao.FindTransaction(strategyInfo)
 }
 
+func FindTransactionNeededToCheckStatus() ([]models.Transaction, error) {
+	return dao.FindTransactionNeededToCheckStatus()
+}
+
 func DeleteTransaction(strategyInfo *models.Transaction) error {
 	return dao.DeleteTransaction(strategyInfo)
 }

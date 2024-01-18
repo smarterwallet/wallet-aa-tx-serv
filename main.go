@@ -13,6 +13,7 @@ import (
 	_ "wallet-aa-tx-serv/config"
 	_ "wallet-aa-tx-serv/global"
 	"wallet-aa-tx-serv/routers"
+	_ "wallet-aa-tx-serv/schedule"
 )
 
 func main() {
