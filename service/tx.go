@@ -6,7 +6,7 @@ import (
 	"wallet-aa-tx-serv/models"
 )
 
-func SaveTransaction(info *models.SavedTr) error {
+func SaveTransaction(info *models.SavedTransaction) error {
 	if info.UserOperationHash == "" {
 		return global.OtherError("UserOperationHash is empty")
 	}

@@ -24,7 +24,7 @@ var (
 	TransactionTypeFromAutTrading = uint(2)
 )
 
-type SavedTr struct {
+type SavedTransaction struct {
 	NetworkId         uint   `json:"networkId"`
 	Type              uint   `json:"type"`
 	UserOperationHash string `json:"userOperationHash"`
