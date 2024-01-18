@@ -8,6 +8,7 @@ import (
 )
 
 func GetTransactionReceiptResponse(txHash string) (*models.GetTransactionReceiptResponseData, error) {
+	// FIXME: 需要从Chain表中获取Api
 	url := "https://mumbai-rpc.web3idea.xyz"
 	header := map[string]string{
 		"Content-Type": "application/json",
@@ -21,6 +22,7 @@ func GetTransactionReceiptResponse(txHash string) (*models.GetTransactionReceipt
 	}
 
 	res := models.GetTransactionReceiptResponseData{}
+	// FIXME: 这里使用httplib.PostInto就不用自己Unmarshal了
 	resPost, err := httplib.Post(
 		url,
 		data,

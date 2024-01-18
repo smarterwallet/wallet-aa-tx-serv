@@ -12,6 +12,7 @@ func PeriodicalUpdateStatusOfUserSendingTransaction() {
 		return
 	}
 
+	// FIXME: txHashs 没有用，后面直接遍历infos就行
 	var txHashs []string
 	for _, info := range infos {
 		txHashs = append(txHashs, info.TxHash)

@@ -12,6 +12,7 @@ func init() {
 
 func InitSchedule() {
 	c := cron.New()
+	// FIXME: 规范配置命名，建议改为schedule.tasks.expression.tx.update.status
 	exp1 := viper.GetString("schedule.tasks.expression.1")
 	//exp2 := viper.GetString("schedule.tasks.expression.2")
 
@@ -26,6 +27,7 @@ func InitSchedule() {
 	select {}
 }
 
+// FIXME: 规范命名
 func func1() {
 	PeriodicalUpdateStatusOfUserSendingTransaction()
 }

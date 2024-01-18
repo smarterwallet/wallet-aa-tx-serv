@@ -21,6 +21,7 @@ func FindTransaction(info *models.Transaction) ([]models.Transaction, error) {
 
 func FindTransactionNeededToCheckStatus() ([]models.Transaction, error) {
 	var infos []models.Transaction
+	// FIXME: 不要使用魔法数字1 2 使用TransactionStatusXXX枚举
 	err := global.DB.Where("status != 1 and status != 2").Find(&infos).Error
 	return infos, err
 }
