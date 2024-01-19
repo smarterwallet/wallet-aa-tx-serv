@@ -10,5 +10,4 @@ func InitStrategyInfoRouter(router *gin.RouterGroup) {
 	userInfo.POST("/", controller.SaveTransaction)
 	userInfo.GET("/", controller.GetTransaction)
 	userInfo.DELETE("/:id", controller.DeleteTransaction)
-	userInfo.GET("/tx/receipt/:txHash", controller.GetStatusOfUserSendingTransaction)
 }

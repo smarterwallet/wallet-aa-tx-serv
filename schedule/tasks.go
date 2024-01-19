@@ -2,43 +2,72 @@ package schedule
 
 import (
 	log "github.com/cihub/seelog"
+	"wallet-aa-tx-serv/models"
 	"wallet-aa-tx-serv/service"
+	"wallet-aa-tx-serv/utils/common"
 )
 
 func PeriodicalUpdateStatusOfUserSendingTransaction() {
-	infos, err := service.FindTransactionNeededToCheckStatus()
+	// Find transaction status is TransactionStatusInit
+	infos, err := service.FindTransaction(&models.Transaction{Status: models.TransactionStatusInit})
 	if err != nil {
 		log.Error(err)
 		return
 	}
-
-	// FIXME: txHashs 没有用，后面直接遍历infos就行
-	var txHashs []string
 	for _, info := range infos {
-		txHashs = append(txHashs, info.TxHash)
-	}
+		// maybe url could be cached
+		chain := &models.Chain{}
+		chain.ID = info.ChainId
+		chains, err := service.FindChain(chain)
+		if err != nil {
+			log.Error(err)
+			return
+		}
+		rpcUrl := chains[0].RpcApi
 
-	for i, txHash := range txHashs {
-
-		transaction, err := service.GetTransactionReceiptResponse(txHash)
+		receipt, err := service.GetTransactionReceiptResponse(rpcUrl, info.TxHash)
 		if err != nil {
 			log.Error(err)
 			return
 		}
 
-		if transaction.Result.Status == infos[i].Status {
+		// type assertion
+		receiptResult, ok := receipt.Result.(models.GetTransactionReceiptResult)
+		if !ok {
+			log.Error("fail to type assertion. (receipt.Result.(models.GetTransactionReceiptResult))")
+			return
+		}
+
+		resultStatus := common.ParseUint(receiptResult.Status)
+		if resultStatus == info.Status {
 			continue
 		}
 
-		infos[i].Status = transaction.Result.Status
+		info.Status = resultStatus
 
-		_, err = service.UpdateTransaction(&infos[i])
+		// get and update parts of userOperation details
+		details, err := service.GetUserOperationByHashResponse(rpcUrl, info.UserOperationHash)
 		if err != nil {
 			log.Error(err)
 			return
 		}
+		opResult, ok := details.Result.(models.GetUserOperationByHashResult)
+		if !ok {
+			log.Error("fail to type assertion. (details.Result.(models.GetUserOperationByHashResult))")
+			return
+		}
+		info.BlockHash = opResult.BlockHash
+		info.BlockNumber = uint(opResult.BlockNumber)
+		info.TxHash = opResult.TransactionHash
+		info.Sender = opResult.UserOperation.Sender
+		info.EntryPointAddress = opResult.EntryPoint
+		info.UserOperation = &opResult.UserOperation
 
-		log.Info("Updated status of tx:", txHash)
-
+		_, err = service.UpdateTransaction(&info)
+		if err != nil {
+			log.Error(err)
+			return
+		}
+		log.Info("Updated status of tx:", info.TxHash)
 	}
 }

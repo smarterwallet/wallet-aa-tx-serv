@@ -25,5 +25,5 @@ func init() {
 	_ = viper.BindEnv("DATABASE.PASSWORD")
 	_ = viper.BindEnv("DATABASE.DBNAME")
 
-	_ = viper.BindEnv("SCHEDULE.TASKS.EXPRESSION.1")
+	_ = viper.BindEnv("SCHEDULE.TASKS.EXPRESSION.TX.UPDATE.STATUS")
 }

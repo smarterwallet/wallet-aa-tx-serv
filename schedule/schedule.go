@@ -12,22 +12,15 @@ func init() {
 
 func InitSchedule() {
 	c := cron.New()
-	// FIXME: 规范配置命名，建议改为schedule.tasks.expression.tx.update.status
-	exp1 := viper.GetString("schedule.tasks.expression.1")
-	//exp2 := viper.GetString("schedule.tasks.expression.2")
+	exp1 := viper.GetString("schedule.tasks.expression.tx.update.status")
 
-	entryId, err := c.AddFunc(exp1, func1)
+	entryId, err := c.AddFunc(exp1, PeriodicalUpdateStatusOfUserSendingTransaction)
 	if err != nil {
 		log.Error(err)
 		return
 	}
-	log.Info("init schedule! func1 entryId: ", entryId)
+	log.Info("init schedule! func PeriodicalUpdateStatusOfUserSendingTransaction entryId: ", entryId)
 
 	c.Start()
 	select {}
-}
-
-// FIXME: 规范命名
-func func1() {
-	PeriodicalUpdateStatusOfUserSendingTransaction()
 }
