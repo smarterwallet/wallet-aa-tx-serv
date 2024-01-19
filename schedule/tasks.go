@@ -1,6 +1,7 @@
 package schedule
 
 import (
+	"encoding/json"
 	log "github.com/cihub/seelog"
 	"wallet-aa-tx-serv/models"
 	"wallet-aa-tx-serv/service"
@@ -32,9 +33,16 @@ func PeriodicalUpdateStatusOfUserSendingTransaction() {
 		}
 
 		// type assertion
-		receiptResult, ok := receipt.Result.(models.GetTransactionReceiptResult)
-		if !ok {
-			log.Error("fail to type assertion. (receipt.Result.(models.GetTransactionReceiptResult))")
+		marshal, err := json.Marshal(receipt.Result)
+		if err != nil {
+			log.Errorf("fail to marshal receipt.Result: %v", err)
+			return
+		}
+
+		receiptResult := &models.GetTransactionReceiptResult{}
+		err = json.Unmarshal(marshal, &receiptResult)
+		if err != nil {
+			log.Errorf("fail to unmarshal receipt.Result: %v", err)
 			return
 		}
 
