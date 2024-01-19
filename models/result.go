@@ -1,6 +1,11 @@
 package models
 
-// 可能存在一部分类型未改为 uint
+type EthRpcResponseData struct {
+	Jsonrpc string      `json:"jsonrpc"`
+	ID      uint        `json:"id"`
+	Result  interface{} `json:"result"`
+}
+
 type GetTransactionByHashResult struct {
 	BlockHash            string   `json:"blockHash"`
 	BlockNumber          string   `json:"blockNumber"`
@@ -13,14 +18,14 @@ type GetTransactionByHashResult struct {
 	Input                string   `json:"input"`
 	MaxFeePerGas         string   `json:"maxFeePerGas"`
 	MaxPriorityFeePerGas string   `json:"maxPriorityFeePerGas"`
-	Nonce                uint     `json:"nonce"`
+	Nonce                string   `json:"nonce"`
 	R                    string   `json:"r"`
 	S                    string   `json:"s"`
 	To                   string   `json:"to"`
-	TransactionIndex     uint     `json:"transactionIndex"`
-	Type                 uint     `json:"type"`
-	V                    uint     `json:"v"`
-	Value                uint     `json:"value"`
+	TransactionIndex     string   `json:"transactionIndex"`
+	Type                 string   `json:"type"`
+	V                    string   `json:"v"`
+	Value                string   `json:"value"`
 }
 
 type GetTransactionReceiptResultLog struct {
@@ -32,7 +37,7 @@ type GetTransactionReceiptResultLog struct {
 	LogIndex         string   `json:"logIndex"`
 	Removed          bool     `json:"removed"`
 	Topics           []string `json:"topics"`
-	TransactionIndex uint     `json:"transactionIndex"`
+	TransactionIndex string   `json:"transactionIndex"`
 }
 
 type GetTransactionReceiptResult struct {
@@ -46,12 +51,16 @@ type GetTransactionReceiptResult struct {
 	From              string                           `json:"from"`
 	GasUsed           string                           `json:"gasUsed"`
 	LogsBloom         string                           `json:"logsBloom"`
-	Status            uint                             `json:"status"`
+	Status            string                           `json:"status"`
 	To                string                           `json:"to"`
-	TransactionIndex  uint                             `json:"transactionIndex"`
-	Type              uint                             `json:"type"`
+	TransactionIndex  string                           `json:"transactionIndex"`
+	Type              string                           `json:"type"`
 }
 
-type GetTransactionReceiptResponseData struct {
-	Result GetTransactionReceiptResult `json:"result"`
+type GetUserOperationByHashResult struct {
+	UserOperation   UserOperation `json:"userOperation"`
+	EntryPoint      string        `json:"entryPoint"`
+	BlockNumber     int           `json:"blockNumber"`
+	BlockHash       string        `json:"blockHash"`
+	TransactionHash string        `json:"transactionHash"`
 }

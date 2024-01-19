@@ -62,15 +62,3 @@ func DeleteTransaction(ctx *gin.Context) {
 
 	gin2.HttpResponse(ctx, err == nil, err)
 }
-
-func GetStatusOfUserSendingTransaction(ctx *gin.Context) {
-	txHash := ctx.Param("txHash")
-
-	res, err := service.GetTransactionReceiptResponse(txHash)
-	if err != nil {
-		gin2.HttpResponse(ctx, "", err)
-		return
-	}
-
-	gin2.HttpResponse(ctx, res, err)
-}
