@@ -41,7 +41,9 @@ func GetTransactionReceiptResponse(rpcUrl string, txHash string) (*models.EthRpc
 		"params":  hash,
 	}
 
-	res := &models.EthRpcResponseData{}
+	res := &models.EthRpcResponseData{
+		Result: &models.GetTransactionReceiptResult{},
+	}
 	resPost, err := httplib.PostInto(
 		rpcUrl,
 		data,
