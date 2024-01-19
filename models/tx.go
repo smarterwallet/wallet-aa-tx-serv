@@ -56,6 +56,7 @@ type Transaction struct {
 	UserOperationHash string          `gorm:"comment:op hash" json:"user_operation_hash"`
 	UserOperation     *UserOperation  `gorm:"-" json:"user_operation"`
 	UserOperationJson json.RawMessage `gorm:"comment:op详情;type:json" json:"user_operation_json"`
+	ExtraData         string          `gorm:"comment:额外数据" json:"extra_data"`
 	Type              uint            `gorm:"not null;comment:类型" json:"type"`
 	Status            uint            `gorm:"not null;comment:状态" json:"status"`
 }
