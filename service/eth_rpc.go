@@ -1,6 +1,7 @@
 package service
 
 import (
+	"errors"
 	"wallet-aa-tx-serv/models"
 	"wallet-aa-tx-serv/utils/httplib"
 )
@@ -17,7 +18,9 @@ func GetTransactionByHashResponse(rpcUrl string, txHash string) (*models.EthRpcR
 		"params":  hash,
 	}
 
-	res := &models.EthRpcResponseData{}
+	res := &models.EthRpcResponseData{
+		Result: &models.GetTransactionByHashResult{},
+	}
 	resPost, err := httplib.PostInto(
 		rpcUrl,
 		data,
@@ -25,6 +28,10 @@ func GetTransactionByHashResponse(rpcUrl string, txHash string) (*models.EthRpcR
 		res,
 	)
 	defer resPost.Body.Close()
+
+	if res.Error.Code != models.EthRpcResponseErrorIsFalse {
+		return res, errors.New("fail to GetTransactionByHashResponse")
+	}
 
 	return res, err
 }
@@ -52,10 +59,14 @@ func GetTransactionReceiptResponse(rpcUrl string, txHash string) (*models.EthRpc
 	)
 	defer resPost.Body.Close()
 
+	if res.Error.Code != models.EthRpcResponseErrorIsFalse {
+		return res, errors.New("fail to GetTransactionReceiptResponse")
+	}
+
 	return res, err
 }
 
-func GetUserOperationByHashResponse(rpcUrl string, userOperationHash string) (*models.EthRpcResponseData, error) {
+func GetUserOperationByHashResponse(bundlerUrl string, userOperationHash string) (*models.EthRpcResponseData, error) {
 	header := map[string]string{
 		"Content-Type": "application/json",
 	}
@@ -67,14 +78,20 @@ func GetUserOperationByHashResponse(rpcUrl string, userOperationHash string) (*m
 		"params":  hash,
 	}
 
-	res := &models.EthRpcResponseData{}
+	res := &models.EthRpcResponseData{
+		Result: &models.GetUserOperationByHashResult{},
+	}
 	resPost, err := httplib.PostInto(
-		rpcUrl,
+		bundlerUrl,
 		data,
 		header,
 		res,
 	)
 	defer resPost.Body.Close()
+
+	if res.Error.Code != models.EthRpcResponseErrorIsFalse {
+		return res, errors.New("fail to GetUserOperationByHashResponse")
+	}
 
 	return res, err
 }

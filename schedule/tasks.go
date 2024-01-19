@@ -23,9 +23,8 @@ func PeriodicalUpdateStatusOfUserSendingTransaction() {
 			log.Error(err)
 			return
 		}
-		rpcUrl := chains[0].RpcApi
 
-		receipt, err := service.GetTransactionReceiptResponse(rpcUrl, info.TxHash)
+		receipt, err := service.GetTransactionReceiptResponse(chains[0].RpcApi, info.TxHash)
 		if err != nil {
 			log.Error(err)
 			return
@@ -46,12 +45,12 @@ func PeriodicalUpdateStatusOfUserSendingTransaction() {
 		info.Status = resultStatus
 
 		// get and update parts of userOperation details
-		details, err := service.GetUserOperationByHashResponse(rpcUrl, info.UserOperationHash)
+		details, err := service.GetUserOperationByHashResponse(chains[0].BundlerApi, info.UserOperationHash)
 		if err != nil {
 			log.Error(err)
 			return
 		}
-		opResult, ok := details.Result.(models.GetUserOperationByHashResult)
+		opResult, ok := details.Result.(*models.GetUserOperationByHashResult)
 		if !ok {
 			log.Error("fail to type assertion. (details.Result.(models.GetUserOperationByHashResult))")
 			return

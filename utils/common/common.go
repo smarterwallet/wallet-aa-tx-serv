@@ -3,10 +3,12 @@ package common
 import (
 	"log"
 	"strconv"
+	"strings"
 )
 
 func ParseUint(str string) uint {
-	resultStatus, err := strconv.ParseUint(str, 16, 0)
+	s := strings.TrimPrefix(str, "0x")
+	resultStatus, err := strconv.ParseUint(s, 16, 64)
 	if err != nil {
 		log.Fatalln(err)
 		return 0

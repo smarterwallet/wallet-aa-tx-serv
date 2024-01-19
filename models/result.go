@@ -1,9 +1,20 @@
 package models
 
+var (
+	EthRpcResponseErrorIsFalse = 0
+)
+
 type EthRpcResponseData struct {
-	Jsonrpc string      `json:"jsonrpc"`
-	ID      uint        `json:"id"`
-	Result  interface{} `json:"result"`
+	Error   EthRpcResponseError `json:"error"`
+	Jsonrpc string              `json:"jsonrpc"`
+	ID      uint                `json:"id"`
+	Result  interface{}         `json:"result"`
+}
+
+type EthRpcResponseError struct {
+	Code    int    `json:"code"`
+	Data    string `json:"data"`
+	Message string `json:"message"`
 }
 
 type GetTransactionByHashResult struct {
