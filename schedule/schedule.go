@@ -7,9 +7,7 @@ import (
 )
 
 func init() {
-	go func() {
-		InitSchedule()
-	}()
+	InitSchedule()
 }
 
 func InitSchedule() {
@@ -24,5 +22,4 @@ func InitSchedule() {
 	log.Info("init schedule! func PeriodicalUpdateStatusOfUserSendingTransaction entryId: ", entryId)
 
 	c.Start()
-	select {}
 }
