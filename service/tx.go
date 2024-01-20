@@ -6,32 +6,36 @@ import (
 	"wallet-aa-tx-serv/models"
 )
 
-func SaveTransaction(info *models.SavedTransaction) error {
-	if info.UserOperationHash == "" {
+func SaveTransaction(transaction *models.SavedTransaction) error {
+	if transaction.UserOperationHash == "" {
 		return global.OtherError("UserOperationHash is empty")
 	}
 	var chain models.Chain
-	err := dao.GetChainByNetworkId(&chain, info.NetworkId)
+	err := dao.GetChainByNetworkId(&chain, transaction.NetworkId)
 	if err != nil {
 		return err
 	}
 	tx := &models.Transaction{
-		UserOperationHash: info.UserOperationHash,
-		Type:              info.Type,
+		UserOperationHash: transaction.UserOperationHash,
+		Type:              transaction.Type,
 		Status:            models.TransactionStatusInit,
 		ChainId:           chain.ID,
 	}
 	return dao.SaveTransaction(tx)
 }
 
-func FindTransaction(strategyInfo *models.Transaction) ([]models.Transaction, error) {
-	return dao.FindTransaction(strategyInfo)
+func FindTransaction(transaction *models.Transaction) ([]models.Transaction, error) {
+	return dao.FindTransaction(transaction)
 }
 
-func DeleteTransaction(strategyInfo *models.Transaction) error {
-	return dao.DeleteTransaction(strategyInfo)
+func FindInitTransaction(transaction *models.Transaction) ([]models.Transaction, error) {
+	return dao.FindInitTransaction(transaction)
 }
 
-func UpdateTransaction(strategyInfo *models.Transaction) (*models.Transaction, error) {
-	return dao.UpdateTransaction(strategyInfo)
+func DeleteTransaction(transaction *models.Transaction) error {
+	return dao.DeleteTransaction(transaction)
+}
+
+func UpdateTransaction(transaction *models.Transaction) (*models.Transaction, error) {
+	return dao.UpdateTransaction(transaction)
 }

@@ -48,15 +48,15 @@ type UserOperation struct {
 type Transaction struct {
 	gorm.Model
 	ChainId           uint            `gorm:"comment:chain表id" json:"chainId,omitempty"`
-	BlockHash         string          `gorm:"comment:交易所在块Hash" json:"block_hash"`
-	BlockNumber       uint            `gorm:"comment:交易所在块高度" json:"block_number"`
-	TxHash            string          `gorm:"comment:交易Hash" json:"tx_hash"`
+	BlockHash         string          `gorm:"comment:交易所在块Hash" json:"blockHash"`
+	BlockNumber       uint            `gorm:"comment:交易所在块高度" json:"blockNumber"`
+	TxHash            string          `gorm:"comment:交易Hash" json:"txHash"`
 	Sender            string          `gorm:"comment:发送方" json:"sender"`
-	EntryPointAddress string          `gorm:"comment:接收方" json:"entry_point_address"`
-	UserOperationHash string          `gorm:"comment:op hash" json:"user_operation_hash"`
-	UserOperation     *UserOperation  `gorm:"-" json:"user_operation"`
-	UserOperationJson json.RawMessage `gorm:"comment:op详情;type:json" json:"user_operation_json"`
-	ExtraData         string          `gorm:"comment:额外数据" json:"extra_data"`
+	EntryPointAddress string          `gorm:"comment:接收方" json:"entryPointAddress"`
+	UserOperationHash string          `gorm:"comment:op hash" json:"userOperationHash"`
+	UserOperation     *UserOperation  `gorm:"-" json:"userOperation"`
+	UserOperationJson json.RawMessage `gorm:"comment:op详情;type:json" json:"userOperationJson"`
+	ExtraData         string          `gorm:"comment:额外数据" json:"extraData"`
 	Type              uint            `gorm:"not null;comment:类型" json:"type"`
 	Status            uint            `gorm:"not null;comment:状态" json:"status"`
 }

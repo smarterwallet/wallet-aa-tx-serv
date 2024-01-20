@@ -7,7 +7,9 @@ import (
 )
 
 func init() {
-	InitSchedule()
+	go func() {
+		InitSchedule()
+	}()
 }
 
 func InitSchedule() {

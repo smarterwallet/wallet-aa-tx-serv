@@ -1,6 +1,7 @@
 package controller
 
 import (
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"strconv"
 	"wallet-aa-tx-serv/models"
@@ -9,16 +10,38 @@ import (
 )
 
 func GetTransaction(ctx *gin.Context) {
-	txHash := ctx.Query("hash")
+	chainName := ctx.Query("chainName")
+	txHash := ctx.Query("txHash")
 	address := ctx.Query("address")
 
+	var chain models.Chain
+	if chainName != "" {
+		chains, err := service.FindChain(&models.Chain{
+			Name: chainName,
+		})
+		if err != nil {
+			gin2.HttpResponse(ctx, "", err)
+			return
+		}
+		if len(chains) == 0 {
+			gin2.HttpResponse(ctx, "", fmt.Errorf("chain not found"))
+			return
+		}
+		chain = chains[0]
+	}
+
 	data, err := service.FindTransaction(&models.Transaction{
-		TxHash: txHash,
-		Sender: address,
+		TxHash:  txHash,
+		Sender:  address,
+		ChainId: chain.ID,
 	})
 	if err != nil {
 		gin2.HttpResponse(ctx, "", err)
 		return
+	}
+
+	for i := range data {
+		data[i].UserOperationJson = nil
 	}
 
 	gin2.HttpResponse(ctx, data, err)

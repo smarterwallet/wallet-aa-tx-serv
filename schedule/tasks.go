@@ -9,7 +9,7 @@ import (
 
 func PeriodicalUpdateStatusOfUserSendingTransaction() {
 	// Find transaction status is TransactionStatusInit
-	infos, err := service.FindTransaction(&models.Transaction{Status: models.TransactionStatusInit})
+	infos, err := service.FindInitTransaction(&models.Transaction{Status: models.TransactionStatusInit})
 	if err != nil {
 		log.Error(err)
 		return
@@ -23,26 +23,6 @@ func PeriodicalUpdateStatusOfUserSendingTransaction() {
 			log.Error(err)
 			return
 		}
-
-		receipt, err := service.GetTransactionReceiptResponse(chains[0].RpcApi, info.TxHash)
-		if err != nil {
-			log.Error(err)
-			return
-		}
-
-		// type assertion
-		receiptResult, ok := receipt.Result.(*models.GetTransactionReceiptResult)
-		if !ok {
-			log.Error("fail to type assertion. (receipt.Result.(models.GetTransactionReceiptResult))")
-			return
-		}
-
-		resultStatus := common.ParseUint(receiptResult.Status)
-		if resultStatus == info.Status {
-			continue
-		}
-
-		info.Status = resultStatus
 
 		// get and update parts of userOperation details
 		details, err := service.GetUserOperationByHashResponse(chains[0].BundlerApi, info.UserOperationHash)
@@ -62,6 +42,23 @@ func PeriodicalUpdateStatusOfUserSendingTransaction() {
 		info.EntryPointAddress = opResult.EntryPoint
 		info.UserOperation = &opResult.UserOperation
 
+		// get and update transaction status
+		receipt, err := service.GetTransactionReceiptResponse(chains[0].RpcApi, info.TxHash)
+		if err != nil {
+			log.Error(err)
+			return
+		}
+		// type assertion
+		receiptResult, ok := receipt.Result.(*models.GetTransactionReceiptResult)
+		if !ok {
+			log.Error("fail to type assertion. (receipt.Result.(models.GetTransactionReceiptResult))")
+			return
+		}
+
+		resultStatus := common.ParseUint(receiptResult.Status)
+		info.Status = resultStatus
+
+		// update transaction
 		_, err = service.UpdateTransaction(&info)
 		if err != nil {
 			log.Error(err)

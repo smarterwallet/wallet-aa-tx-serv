@@ -51,16 +51,15 @@ func GetTransactionReceiptResponse(rpcUrl string, txHash string) (*models.EthRpc
 	res := &models.EthRpcResponseData{
 		Result: &models.GetTransactionReceiptResult{},
 	}
-	resPost, err := httplib.PostInto(
+	_, err := httplib.PostInto(
 		rpcUrl,
 		data,
 		header,
 		res,
 	)
-	defer resPost.Body.Close()
 
 	if res.Error.Code != models.EthRpcResponseErrorIsFalse {
-		return res, errors.New("fail to GetTransactionReceiptResponse")
+		return res, errors.New("fail to GetTransactionReceiptResponse. Tx hash: " + txHash)
 	}
 
 	return res, err
@@ -81,13 +80,12 @@ func GetUserOperationByHashResponse(bundlerUrl string, userOperationHash string)
 	res := &models.EthRpcResponseData{
 		Result: &models.GetUserOperationByHashResult{},
 	}
-	resPost, err := httplib.PostInto(
+	_, err := httplib.PostInto(
 		bundlerUrl,
 		data,
 		header,
 		res,
 	)
-	defer resPost.Body.Close()
 
 	if res.Error.Code != models.EthRpcResponseErrorIsFalse {
 		return res, errors.New("fail to GetUserOperationByHashResponse")
