@@ -12,6 +12,7 @@ import (
 func GetTransaction(ctx *gin.Context) {
 	chainName := ctx.Query("chainName")
 	txHash := ctx.Query("txHash")
+	opHash := ctx.Query("opHash")
 	address := ctx.Query("address")
 
 	var chain models.Chain
@@ -31,9 +32,10 @@ func GetTransaction(ctx *gin.Context) {
 	}
 
 	data, err := service.FindTransaction(&models.Transaction{
-		TxHash:  txHash,
-		Sender:  address,
-		ChainId: chain.ID,
+		UserOperationHash: opHash,
+		TxHash:            txHash,
+		Sender:            address,
+		ChainId:           chain.ID,
 	})
 	if err != nil {
 		gin2.HttpResponse(ctx, "", err)
