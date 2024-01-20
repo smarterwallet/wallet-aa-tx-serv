@@ -7,8 +7,8 @@ This service needs to provide an interface to query and save transactions extern
 ## Features
 
 - [x] Query by user address or tx hash
-- [ ] Record user's sending transactions, including the UserOperation details of the transactions
-- [ ] Periodic updates the status of the user's sending transactions
+- [x] Record user's sending transactions, including the UserOperation details of the transactions
+- [x] Periodic updates the status of the user's sending transactions
 
 ## Getting Started
 
