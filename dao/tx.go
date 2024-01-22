@@ -5,12 +5,12 @@ import (
 	"wallet-aa-tx-serv/models"
 )
 
-func SaveTransaction(strategyInfo *models.Transaction) error {
-	return global.DB.Save(strategyInfo).Error
+func SaveTransaction(info *models.Transaction) error {
+	return global.DB.Save(info).Error
 }
 
-func DeleteTransaction(strategyInfo *models.Transaction) error {
-	return global.DB.Where(strategyInfo).Delete(strategyInfo).Error
+func DeleteTransaction(info *models.Transaction) error {
+	return global.DB.Where(info).Delete(info).Error
 }
 
 func FindTransaction(info *models.Transaction) ([]models.Transaction, error) {
