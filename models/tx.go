@@ -25,9 +25,10 @@ var (
 )
 
 type SavedTransaction struct {
-	NetworkId         uint   `json:"networkId"`
-	Type              uint   `json:"type"`
-	UserOperationHash string `json:"userOperationHash"`
+	NetworkId         uint            `json:"networkId"`
+	TxSource          uint            `gorm:"not null;comment:交易来源" json:"txSource"`
+	UserOperationHash string          `json:"userOperationHash"`
+	ExtraData         json.RawMessage `json:"extraData"`
 }
 
 type UserOperation struct {

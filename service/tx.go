@@ -17,9 +17,10 @@ func SaveTransaction(transaction *models.SavedTransaction) error {
 	}
 	tx := &models.Transaction{
 		UserOperationHash: transaction.UserOperationHash,
-		TxSource:          transaction.Type,
+		TxSource:          transaction.TxSource,
 		Status:            models.TransactionStatusInit,
 		ChainId:           chain.ID,
+		ExtraData:         transaction.ExtraData,
 	}
 	return dao.SaveTransaction(tx)
 }
