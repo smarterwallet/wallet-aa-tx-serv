@@ -18,10 +18,10 @@ var (
 	// TransactionStatusUnKnow 交易状态无法判断
 	TransactionStatusUnKnow = uint(4)
 
-	// TransactionTypeFromDemandAbstraction 交易类型来自需求抽象
-	TransactionTypeFromDemandAbstraction = uint(1)
-	// TransactionTypeFromAutTrading 交易类型来自自动交易
-	TransactionTypeFromAutTrading = uint(2)
+	// TxSourceFromDemandAbstraction 交易类型来自需求抽象
+	TxSourceFromDemandAbstraction = uint(1)
+	// TxSourceFromAutTrading 交易类型来自自动交易
+	TxSourceFromAutTrading = uint(2)
 )
 
 type SavedTransaction struct {
@@ -56,8 +56,8 @@ type Transaction struct {
 	UserOperationHash string          `gorm:"comment:op hash" json:"userOperationHash"`
 	UserOperation     *UserOperation  `gorm:"-" json:"userOperation"`
 	UserOperationJson json.RawMessage `gorm:"comment:op详情;type:json" json:"userOperationJson"`
-	ExtraData         string          `gorm:"comment:额外数据" json:"extraData"`
-	Type              uint            `gorm:"not null;comment:类型" json:"type"`
+	ExtraData         json.RawMessage `gorm:"comment:额外数据;type:json" json:"extraData"`
+	TxSource          uint            `gorm:"not null;comment:交易来源" json:"txSource"`
 	Status            uint            `gorm:"not null;comment:状态" json:"status"`
 }
 

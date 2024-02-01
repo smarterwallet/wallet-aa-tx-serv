@@ -17,7 +17,7 @@ func SaveTransaction(transaction *models.SavedTransaction) error {
 	}
 	tx := &models.Transaction{
 		UserOperationHash: transaction.UserOperationHash,
-		Type:              transaction.Type,
+		TxSource:          transaction.Type,
 		Status:            models.TransactionStatusInit,
 		ChainId:           chain.ID,
 	}
