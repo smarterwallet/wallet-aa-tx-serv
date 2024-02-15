@@ -24,7 +24,7 @@ To get started with this template, follow these simple steps:
    cd wallet-aa-tx-serv
    ```
 
-3. Install dependencies (make sure you have Go installed on your system):
+3. Install dep1endencies (make sure you have Go installed on your system):
    ```bash
    go mod tidy
    ```
