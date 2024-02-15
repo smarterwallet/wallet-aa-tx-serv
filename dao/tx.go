@@ -1,6 +1,7 @@
 package dao
 
 import (
+	"fmt"
 	"wallet-aa-tx-serv/global"
 	"wallet-aa-tx-serv/models"
 )
@@ -15,7 +16,7 @@ func DeleteTransaction(info *models.Transaction) error {
 
 func FindTransaction(info *models.Transaction) ([]models.Transaction, error) {
 	var infos []models.Transaction
-	err := global.DB.Where(info).Find(&infos).Error
+	err := global.DB.Where(info).Where(fmt.Sprintf("status = %d", info.Status)).Find(&infos).Error
 	return infos, err
 }
 
