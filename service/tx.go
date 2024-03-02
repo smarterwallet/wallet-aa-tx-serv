@@ -1,6 +1,10 @@
 package service
 
 import (
+	"fmt"
+	"github.com/shopspring/decimal"
+	"math/big"
+	"wallet-aa-tx-serv/client/priceclient"
 	"wallet-aa-tx-serv/dao"
 	"wallet-aa-tx-serv/global"
 	"wallet-aa-tx-serv/models"
@@ -39,4 +43,73 @@ func DeleteTransaction(transaction *models.Transaction) error {
 
 func UpdateTransaction(transaction *models.Transaction) (*models.Transaction, error) {
 	return dao.UpdateTransaction(transaction)
+}
+
+func GetEstimateFee(networkId uint64) (*models.EstimateFeeResponse, error) {
+	rpc, ok := global.CacheConfigNetworkIdAndRPC[networkId]
+	if !ok {
+		return nil, fmt.Errorf("networkId(%d) not found rpc", networkId)
+	}
+	tokens, ok := global.CacheConfigNetworkIdAndTokens[networkId]
+	if !ok {
+		return nil, fmt.Errorf("networkId(%d) not found deci", networkId)
+	}
+	nativeToken := &models.Token{}
+	for _, t := range tokens {
+		if t.Type == 0 {
+			nativeToken = &t
+			break
+		}
+	}
+
+	gasLimit := big.NewInt(500000)
+
+	// 预估需要native token数量
+	// nativeGasfee = gasPrice * gasLimit
+	response, err := GetGasPriceResponse(rpc)
+	if err != nil {
+		return nil, err
+	}
+	gasPrice, _ := new(big.Int).SetString(response.Result.(string)[2:], 16)
+	gasFeeBigInt := gasPrice.Mul(gasPrice, gasLimit)
+
+	result := new(big.Int)
+	nativeTokenDeciBigInt := result.Exp(big.NewInt(10), big.NewInt(int64(nativeToken.Decimal)), nil)
+	nativeTokenDeciDecimal, _ := decimal.NewFromString(nativeTokenDeciBigInt.String())
+
+	gasFeeDecimal, _ := decimal.NewFromString(gasFeeBigInt.String())
+	gasFeeDecimal = gasFeeDecimal.Div(nativeTokenDeciDecimal)
+
+	nativeTokenPrice, err := priceclient.GetUSDByTokenName(nativeToken.Name, nil)
+	if err != nil {
+		return nil, err
+	}
+	gasFeeDecimalUSD := gasFeeDecimal.Mul(*nativeTokenPrice)
+
+	// 最后输出的结果
+	feeResult := &models.EstimateFeeResponse{
+		NetworkId:   networkId,
+		USDValue:    gasFeeDecimalUSD,
+		EstimateFee: make(map[int]decimal.Decimal),
+	}
+	feeResult.EstimateFee[nativeToken.TokenId] = gasFeeDecimal
+
+	// 计算其他token
+	for _, token := range tokens {
+		// 要求ERC20token并且可以作为手续费
+		if token.Type == 1 && token.Fee == 1 {
+			// ERC20Token = nativeGasfee * native token price / ERC20Token price
+			erc20TokenPrice, err := priceclient.GetUSDByTokenName(token.Name, nil)
+			if err != nil {
+				return nil, err
+			}
+			if erc20TokenPrice == nil || erc20TokenPrice.String() == "0" {
+				continue
+			}
+			feeResult.EstimateFee[token.TokenId] = gasFeeDecimalUSD.Div(*erc20TokenPrice)
+		}
+	}
+
+	return feeResult, nil
+
 }

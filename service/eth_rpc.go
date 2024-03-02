@@ -6,21 +6,19 @@ import (
 	"wallet-aa-tx-serv/utils/httplib"
 )
 
-func GetTransactionByHashResponse(rpcUrl string, txHash string) (*models.EthRpcResponseData, error) {
-	header := map[string]string{
-		"Content-Type": "application/json",
-	}
-	hash := []string{txHash}
+var header = map[string]string{
+	"Content-Type": "application/json",
+}
+
+func GetGasPriceResponse(rpcUrl string) (*models.EthRpcResponseData, error) {
 	data := map[string]interface{}{
 		"jsonrpc": "2.0",
 		"id":      1,
-		"method":  "eth_getTransactionByHash",
-		"params":  hash,
+		"method":  "eth_gasPrice",
+		"params":  []string{},
 	}
 
-	res := &models.EthRpcResponseData{
-		Result: &models.GetTransactionByHashResult{},
-	}
+	res := &models.EthRpcResponseData{}
 	resPost, err := httplib.PostInto(
 		rpcUrl,
 		data,
@@ -30,16 +28,13 @@ func GetTransactionByHashResponse(rpcUrl string, txHash string) (*models.EthRpcR
 	defer resPost.Body.Close()
 
 	if res.Error.Code != models.EthRpcResponseErrorIsFalse {
-		return res, errors.New("fail to GetTransactionByHashResponse")
+		return res, errors.New("fail to GetGasPriceResponse")
 	}
 
 	return res, err
 }
 
 func GetTransactionReceiptResponse(rpcUrl string, txHash string) (*models.EthRpcResponseData, error) {
-	header := map[string]string{
-		"Content-Type": "application/json",
-	}
 	hash := []string{txHash}
 	data := map[string]interface{}{
 		"jsonrpc": "2.0",
@@ -66,9 +61,6 @@ func GetTransactionReceiptResponse(rpcUrl string, txHash string) (*models.EthRpc
 }
 
 func GetUserOperationByHashResponse(bundlerUrl string, userOperationHash string) (*models.EthRpcResponseData, error) {
-	header := map[string]string{
-		"Content-Type": "application/json",
-	}
 	hash := []string{userOperationHash}
 	data := map[string]interface{}{
 		"jsonrpc": "2.0",

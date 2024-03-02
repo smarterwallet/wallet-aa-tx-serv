@@ -3,6 +3,7 @@ package models
 import (
 	"encoding/json"
 	"errors"
+	"github.com/shopspring/decimal"
 	"gorm.io/gorm"
 )
 
@@ -85,4 +86,12 @@ func (s *Transaction) AfterFind(tx *gorm.DB) (err error) {
 		}
 	}
 	return
+}
+
+type EstimateFeeResponse struct {
+	NetworkId uint64 `json:"networkId"`
+	// USDValue 估算的手续费美元金额
+	USDValue decimal.Decimal `json:"usdValue"`
+	// EstimateFee 估算的手续费 key: tokenId value: estimateFee
+	EstimateFee map[int]decimal.Decimal `json:"estimateFee"`
 }

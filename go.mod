@@ -7,6 +7,7 @@ require (
 	github.com/gin-contrib/pprof v1.3.0
 	github.com/gin-gonic/gin v1.8.1
 	github.com/robfig/cron/v3 v3.0.0
+	github.com/shopspring/decimal v1.3.1
 	github.com/spf13/viper v1.9.0
 	gorm.io/driver/mysql v1.5.2
 	gorm.io/driver/postgres v1.5.4

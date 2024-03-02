@@ -89,3 +89,24 @@ func DeleteTransaction(ctx *gin.Context) {
 
 	gin2.HttpResponse(ctx, err == nil, err)
 }
+
+func GetEstimateFee(ctx *gin.Context) {
+	networkId := ctx.Query("networkId")
+
+	if networkId == "" {
+		gin2.HttpResponse(ctx, "", fmt.Errorf("networkId is empty"))
+		return
+	}
+
+	networkIdUint, err := strconv.ParseUint(networkId, 10, 64)
+	if err != nil {
+		gin2.HttpResponse(ctx, "", err)
+		return
+	}
+	fee, err := service.GetEstimateFee(networkIdUint)
+	if err != nil {
+		return
+	}
+
+	gin2.HttpResponse(ctx, fee, err)
+}

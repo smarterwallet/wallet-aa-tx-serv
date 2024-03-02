@@ -39,4 +39,5 @@ func InitRouter() *gin.Engine {
 func loadRouter(router *gin.RouterGroup) {
 	InitHealthRouter(router)
 	InitTransactionRouter(router)
+	InitConfigCacheRouter(router)
 }
