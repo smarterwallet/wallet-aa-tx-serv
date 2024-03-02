@@ -26,4 +26,7 @@ func init() {
 	_ = viper.BindEnv("DATABASE.DBNAME")
 
 	_ = viper.BindEnv("SCHEDULE.TASKS.EXPRESSION.TX.UPDATE.STATUS")
+
+	_ = viper.BindEnv("SERVICE.ASSET.API")
+	_ = viper.BindEnv("SERVICE.TOKEN.PRICE.API")
 }
