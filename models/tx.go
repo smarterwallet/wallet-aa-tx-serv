@@ -26,7 +26,7 @@ var (
 )
 
 type SavedTransaction struct {
-	NetworkId         uint            `json:"networkId"`
+	ChainId           int             `json:"chainId"`
 	TxSource          uint            `gorm:"not null;comment:交易来源" json:"txSource"`
 	UserOperationHash string          `json:"userOperationHash"`
 	ExtraData         json.RawMessage `json:"extraData"`
@@ -49,7 +49,7 @@ type UserOperation struct {
 // Transaction 交易信息
 type Transaction struct {
 	gorm.Model
-	ChainId           uint            `gorm:"comment:chain表id" json:"chainId,omitempty"`
+	ChainId           int             `gorm:"comment:chain表id" json:"chainId,omitempty"`
 	BlockHash         string          `gorm:"comment:交易所在块Hash" json:"blockHash"`
 	BlockNumber       uint            `gorm:"comment:交易所在块高度" json:"blockNumber"`
 	TxHash            string          `gorm:"comment:交易Hash" json:"txHash"`
@@ -89,7 +89,7 @@ func (s *Transaction) AfterFind(tx *gorm.DB) (err error) {
 }
 
 type EstimateFeeResponse struct {
-	NetworkId uint64 `json:"networkId"`
+	ChainId int `json:"chainId"`
 	// USDValue 估算的手续费美元金额
 	USDValue decimal.Decimal `json:"usdValue"`
 	// EstimateFee 估算的手续费 key: tokenId value: estimateFee

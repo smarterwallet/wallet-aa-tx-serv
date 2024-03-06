@@ -19,8 +19,7 @@ func FlushCacheConfig() error {
 	}
 
 	for _, c := range config.Chain {
-		global.CacheConfigNetworkIdAndRPC[c.NetWorkId] = c.RpcApi
-		global.CacheConfigNetworkIdAndTokens[c.NetWorkId] = c.Tokens
+		global.CacheConfigChainIdAndChain[c.ID] = &c
 	}
 	return nil
 }

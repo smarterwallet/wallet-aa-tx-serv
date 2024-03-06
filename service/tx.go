@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/shopspring/decimal"
 	"math/big"
+	"wallet-aa-tx-serv/client/clientdto"
 	"wallet-aa-tx-serv/client/priceclient"
 	"wallet-aa-tx-serv/dao"
 	"wallet-aa-tx-serv/global"
@@ -14,8 +15,7 @@ func SaveTransaction(transaction *models.SavedTransaction) error {
 	if transaction.UserOperationHash == "" {
 		return global.OtherError("UserOperationHash is empty")
 	}
-	var chain models.Chain
-	err := dao.GetChainByNetworkId(&chain, transaction.NetworkId)
+	chain, err := GetChainByChainId(transaction.ChainId)
 	if err != nil {
 		return err
 	}
@@ -45,17 +45,13 @@ func UpdateTransaction(transaction *models.Transaction) (*models.Transaction, er
 	return dao.UpdateTransaction(transaction)
 }
 
-func GetEstimateFee(networkId uint64) (*models.EstimateFeeResponse, error) {
-	rpc, ok := global.CacheConfigNetworkIdAndRPC[networkId]
+func GetEstimateFee(chainId int) (*models.EstimateFeeResponse, error) {
+	chain, ok := global.CacheConfigChainIdAndChain[chainId]
 	if !ok {
-		return nil, fmt.Errorf("networkId(%d) not found rpc", networkId)
+		return nil, fmt.Errorf("chainId(%d) not found rpc", chainId)
 	}
-	tokens, ok := global.CacheConfigNetworkIdAndTokens[networkId]
-	if !ok {
-		return nil, fmt.Errorf("networkId(%d) not found deci", networkId)
-	}
-	nativeToken := &models.Token{}
-	for _, t := range tokens {
+	nativeToken := &clientdto.Token{}
+	for _, t := range chain.Tokens {
 		if t.Type == 0 {
 			nativeToken = &t
 			break
@@ -66,7 +62,7 @@ func GetEstimateFee(networkId uint64) (*models.EstimateFeeResponse, error) {
 
 	// 预估需要native token数量
 	// nativeGasfee = gasPrice * gasLimit
-	response, err := GetGasPriceResponse(rpc)
+	response, err := GetGasPriceResponse(chain.RpcApi)
 	if err != nil {
 		return nil, err
 	}
@@ -88,14 +84,14 @@ func GetEstimateFee(networkId uint64) (*models.EstimateFeeResponse, error) {
 
 	// 最后输出的结果
 	feeResult := &models.EstimateFeeResponse{
-		NetworkId:   networkId,
+		ChainId:     chain.ID,
 		USDValue:    gasFeeDecimalUSD,
 		EstimateFee: make(map[int]decimal.Decimal),
 	}
 	feeResult.EstimateFee[nativeToken.TokenId] = gasFeeDecimal
 
 	// 计算其他token
-	for _, token := range tokens {
+	for _, token := range chain.Tokens {
 		// 要求ERC20token并且可以作为手续费
 		if token.Type == 1 && token.Fee == 1 {
 			// ERC20Token = nativeGasfee * native token price / ERC20Token price

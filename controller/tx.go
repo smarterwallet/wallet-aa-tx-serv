@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"strconv"
+	"wallet-aa-tx-serv/client/clientdto"
 	"wallet-aa-tx-serv/models"
 	"wallet-aa-tx-serv/service"
 	"wallet-aa-tx-serv/utils/gin2"
@@ -16,20 +17,14 @@ func GetTransaction(ctx *gin.Context) {
 	address := ctx.Query("address")
 	status := ctx.Query("status")
 
-	var chain models.Chain
+	var chain *clientdto.Chain
+	var err error
 	if chainName != "" {
-		chains, err := service.FindChain(&models.Chain{
-			Name: chainName,
-		})
+		chain, err = service.GetChainByName(chainName)
 		if err != nil {
 			gin2.HttpResponse(ctx, "", err)
 			return
 		}
-		if len(chains) == 0 {
-			gin2.HttpResponse(ctx, "", fmt.Errorf("chain not found"))
-			return
-		}
-		chain = chains[0]
 	}
 	statusUint, err := strconv.ParseUint(status, 10, 64)
 	data, err := service.FindTransaction(&models.Transaction{
@@ -91,19 +86,19 @@ func DeleteTransaction(ctx *gin.Context) {
 }
 
 func GetEstimateFee(ctx *gin.Context) {
-	networkId := ctx.Query("networkId")
+	chainId := ctx.Query("chainId")
 
-	if networkId == "" {
-		gin2.HttpResponse(ctx, "", fmt.Errorf("networkId is empty"))
+	if chainId == "" {
+		gin2.HttpResponse(ctx, "", fmt.Errorf("chainId is empty"))
 		return
 	}
 
-	networkIdUint, err := strconv.ParseUint(networkId, 10, 64)
+	networkIdUint, err := strconv.ParseInt(chainId, 10, 64)
 	if err != nil {
 		gin2.HttpResponse(ctx, "", err)
 		return
 	}
-	fee, err := service.GetEstimateFee(networkIdUint)
+	fee, err := service.GetEstimateFee(int(networkIdUint))
 	if err != nil {
 		return
 	}

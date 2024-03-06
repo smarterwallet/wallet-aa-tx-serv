@@ -2,8 +2,41 @@ package clientdto
 
 import (
 	"time"
-	"wallet-aa-tx-serv/models"
 )
+
+type Chain struct {
+	ID                     int         `json:"ID"`
+	CreatedAt              time.Time   `json:"CreatedAt"`
+	UpdatedAt              time.Time   `json:"UpdatedAt"`
+	DeletedAt              interface{} `json:"DeletedAt"`
+	NetWorkId              uint64      `json:"netWorkId"`
+	Name                   string      `json:"name"`
+	Icon                   string      `json:"icon"`
+	Tokens                 []Token     `json:"tokens"`
+	Erc4337ContractAddress struct {
+		SimpleAccountFactory string `json:"simpleAccountFactory"`
+		TokenPaymaster       struct {
+			Swt string `json:"swt"`
+		} `json:"tokenPaymaster"`
+		Entrypoint string `json:"entrypoint"`
+	} `json:"erc4337ContractAddress"`
+	RpcApi          string `json:"rpcApi"`
+	BundlerApi      string `json:"bundlerApi"`
+	BlockScanUrl    string `json:"blockScanUrl"`
+	CreateWalletApi string `json:"createWalletApi"`
+	ApiType         int    `json:"apiType"`
+	ProduceBlock24H int    `json:"produceBlock24h"`
+}
+
+type Token struct {
+	TokenId int    `json:"tokenId"`
+	Name    string `json:"name"`
+	Fee     int    `json:"fee,omitempty"`
+	Address string `json:"address"`
+	Decimal uint64 `json:"decimal"`
+	Icon    string `json:"icon"`
+	Type    int    `json:"type,omitempty"`
+}
 
 type GetPackageResponse struct {
 	Common struct {
@@ -30,27 +63,5 @@ type GetPackageResponse struct {
 			} `json:"contractAddress"`
 		} `json:"config"`
 	} `json:"common"`
-	Chain []struct {
-		ID                     int            `json:"ID"`
-		CreatedAt              time.Time      `json:"CreatedAt"`
-		UpdatedAt              time.Time      `json:"UpdatedAt"`
-		DeletedAt              interface{}    `json:"DeletedAt"`
-		NetWorkId              uint64         `json:"netWorkId"`
-		Name                   string         `json:"name"`
-		Icon                   string         `json:"icon"`
-		Tokens                 []models.Token `json:"tokens"`
-		Erc4337ContractAddress struct {
-			SimpleAccountFactory string `json:"simpleAccountFactory"`
-			TokenPaymaster       struct {
-				Swt string `json:"swt"`
-			} `json:"tokenPaymaster"`
-			Entrypoint string `json:"entrypoint"`
-		} `json:"erc4337ContractAddress"`
-		RpcApi          string `json:"rpcApi"`
-		BundlerApi      string `json:"bundlerApi"`
-		BlockScanUrl    string `json:"blockScanUrl"`
-		CreateWalletApi string `json:"createWalletApi"`
-		ApiType         int    `json:"apiType"`
-		ProduceBlock24H int    `json:"produceBlock24h"`
-	} `json:"chain"`
+	Chain []Chain `json:"chain"`
 }

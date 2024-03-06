@@ -16,16 +16,14 @@ func PeriodicalUpdateStatusOfUserSendingTransaction() {
 	}
 	for _, info := range infos {
 		// maybe url could be cached
-		chain := &models.Chain{}
-		chain.ID = info.ChainId
-		chains, err := service.FindChain(chain)
+		chain, err := service.GetChainByChainId(info.ChainId)
 		if err != nil {
 			log.Error(err)
 			return
 		}
 
 		// get and update parts of userOperation details
-		details, err := service.GetUserOperationByHashResponse(chains[0].BundlerApi, info.UserOperationHash)
+		details, err := service.GetUserOperationByHashResponse(chain.BundlerApi, info.UserOperationHash)
 		if err != nil {
 			log.Error(err)
 			return
@@ -43,7 +41,7 @@ func PeriodicalUpdateStatusOfUserSendingTransaction() {
 		info.UserOperation = &opResult.UserOperation
 
 		// get and update transaction status
-		receipt, err := service.GetTransactionReceiptResponse(chains[0].RpcApi, info.TxHash)
+		receipt, err := service.GetTransactionReceiptResponse(chain.RpcApi, info.TxHash)
 		if err != nil {
 			log.Error(err)
 			return
