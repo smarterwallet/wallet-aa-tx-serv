@@ -18,8 +18,8 @@ func FlushCacheConfig() error {
 		return err
 	}
 
-	for _, c := range config.Chain {
-		global.CacheConfigChainIdAndChain[c.ID] = &c
+	for i, c := range config.Chain {
+		global.CacheConfigChainIdAndChain[c.ID] = &config.Chain[i]
 	}
 	return nil
 }
