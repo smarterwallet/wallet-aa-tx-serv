@@ -5,6 +5,7 @@ import (
 	"errors"
 	"github.com/shopspring/decimal"
 	"gorm.io/gorm"
+	"wallet-aa-tx-serv/client/clientdto"
 )
 
 var (
@@ -88,10 +89,15 @@ func (s *Transaction) AfterFind(tx *gorm.DB) (err error) {
 	return
 }
 
+type TokenFee struct {
+	Token       *clientdto.Token `json:"token"`
+	EstimateFee decimal.Decimal  `json:"estimateFee"`
+}
+
 type EstimateFeeResponse struct {
 	ChainId int `json:"chainId"`
-	// USDValue 估算的手续费美元金额
-	USDValue decimal.Decimal `json:"usdValue"`
-	// EstimateFee 估算的手续费 key: tokenId value: estimateFee
-	EstimateFee map[int]decimal.Decimal `json:"estimateFee"`
+	// PayFeeUSDValue 估算的手续费美元金额
+	PayFeeUSDValue decimal.Decimal `json:"payFeeUsdValue"`
+	// PayFeeByToken 估算的使用Token支付手续费
+	PayFeeByToken []TokenFee `json:"payFeeByToken"`
 }

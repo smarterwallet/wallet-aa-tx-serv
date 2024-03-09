@@ -84,11 +84,14 @@ func GetEstimateFee(chainId int) (*models.EstimateFeeResponse, error) {
 
 	// 最后输出的结果
 	feeResult := &models.EstimateFeeResponse{
-		ChainId:     chain.ID,
-		USDValue:    gasFeeDecimalUSD,
-		EstimateFee: make(map[int]decimal.Decimal),
+		ChainId:        chain.ID,
+		PayFeeUSDValue: gasFeeDecimalUSD,
+		PayFeeByToken:  []models.TokenFee{},
 	}
-	feeResult.EstimateFee[nativeToken.TokenId] = gasFeeDecimal
+	feeResult.PayFeeByToken = append(feeResult.PayFeeByToken, models.TokenFee{
+		Token:       nativeToken,
+		EstimateFee: gasFeeDecimal,
+	})
 
 	// 计算其他token
 	for _, token := range chain.Tokens {
@@ -102,7 +105,10 @@ func GetEstimateFee(chainId int) (*models.EstimateFeeResponse, error) {
 			if erc20TokenPrice == nil || erc20TokenPrice.String() == "0" {
 				continue
 			}
-			feeResult.EstimateFee[token.TokenId] = gasFeeDecimalUSD.Div(*erc20TokenPrice)
+			feeResult.PayFeeByToken = append(feeResult.PayFeeByToken, models.TokenFee{
+				Token:       &token,
+				EstimateFee: gasFeeDecimalUSD.Div(*erc20TokenPrice),
+			})
 		}
 	}
 
