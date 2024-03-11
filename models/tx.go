@@ -50,7 +50,7 @@ type UserOperation struct {
 // Transaction 交易信息
 type Transaction struct {
 	gorm.Model
-	ChainId           int             `gorm:"comment:chain表id" json:"chainId,omitempty"`
+	ChainId           int             `gorm:"comment:chain表id" json:"chainId"`
 	BlockHash         string          `gorm:"comment:交易所在块Hash" json:"blockHash"`
 	BlockNumber       uint            `gorm:"comment:交易所在块高度" json:"blockNumber"`
 	TxHash            string          `gorm:"comment:交易Hash" json:"txHash"`

@@ -94,7 +94,7 @@ func GetEstimateFee(chainId int) (*models.EstimateFeeResponse, error) {
 	})
 
 	// 计算其他token
-	for _, token := range chain.Tokens {
+	for i, token := range chain.Tokens {
 		// 要求ERC20token并且可以作为手续费
 		if token.Type == 1 && token.Fee == 1 {
 			// ERC20Token = nativeGasfee * native token price / ERC20Token price
@@ -106,7 +106,7 @@ func GetEstimateFee(chainId int) (*models.EstimateFeeResponse, error) {
 				continue
 			}
 			feeResult.PayFeeByToken = append(feeResult.PayFeeByToken, models.TokenFee{
-				Token:      &token,
+				Token:      &chain.Tokens[i],
 				NeedAmount: gasFeeDecimalUSD.Div(*erc20TokenPrice),
 			})
 		}
