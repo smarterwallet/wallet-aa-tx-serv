@@ -5,6 +5,7 @@ import (
 	"errors"
 	"github.com/shopspring/decimal"
 	"gorm.io/gorm"
+	"math/big"
 	"wallet-aa-tx-serv/client/clientdto"
 )
 
@@ -95,7 +96,8 @@ type TokenFee struct {
 }
 
 type EstimateFeeResponse struct {
-	ChainId int `json:"chainId"`
+	ChainId  int      `json:"chainId"`
+	GasPrice *big.Int `json:"gasPrice"`
 	// PayFeeUSDValue 估算的手续费美元金额
 	PayFeeUSDValue decimal.Decimal `json:"payFeeUsdValue"`
 	// PayFeeByToken 估算的使用Token支付手续费

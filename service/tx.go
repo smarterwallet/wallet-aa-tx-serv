@@ -85,6 +85,7 @@ func GetEstimateFee(chainId int) (*models.EstimateFeeResponse, error) {
 	// 最后输出的结果
 	feeResult := &models.EstimateFeeResponse{
 		ChainId:        chain.ID,
+		GasPrice:       gasPrice,
 		PayFeeUSDValue: gasFeeDecimalUSD,
 		PayFeeByToken:  []models.TokenFee{},
 	}
