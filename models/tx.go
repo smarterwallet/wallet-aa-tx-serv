@@ -90,8 +90,8 @@ func (s *Transaction) AfterFind(tx *gorm.DB) (err error) {
 }
 
 type TokenFee struct {
-	Token       *clientdto.Token `json:"token"`
-	EstimateFee decimal.Decimal  `json:"estimateFee"`
+	Token      *clientdto.Token `json:"token"`
+	NeedAmount decimal.Decimal  `json:"needAmount"`
 }
 
 type EstimateFeeResponse struct {

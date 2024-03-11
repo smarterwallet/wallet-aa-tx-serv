@@ -89,8 +89,8 @@ func GetEstimateFee(chainId int) (*models.EstimateFeeResponse, error) {
 		PayFeeByToken:  []models.TokenFee{},
 	}
 	feeResult.PayFeeByToken = append(feeResult.PayFeeByToken, models.TokenFee{
-		Token:       nativeToken,
-		EstimateFee: gasFeeDecimal,
+		Token:      nativeToken,
+		NeedAmount: gasFeeDecimal,
 	})
 
 	// 计算其他token
@@ -106,8 +106,8 @@ func GetEstimateFee(chainId int) (*models.EstimateFeeResponse, error) {
 				continue
 			}
 			feeResult.PayFeeByToken = append(feeResult.PayFeeByToken, models.TokenFee{
-				Token:       &token,
-				EstimateFee: gasFeeDecimalUSD.Div(*erc20TokenPrice),
+				Token:      &token,
+				NeedAmount: gasFeeDecimalUSD.Div(*erc20TokenPrice),
 			})
 		}
 	}
