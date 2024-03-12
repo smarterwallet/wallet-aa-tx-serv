@@ -17,6 +17,12 @@ func GetTransaction(ctx *gin.Context) {
 	address := ctx.Query("address")
 	status := ctx.Query("status")
 
+	queryTxParams := &models.Transaction{
+		UserOperationHash: opHash,
+		TxHash:            txHash,
+		Sender:            address,
+	}
+
 	var chain *clientdto.Chain
 	var err error
 	if chainName != "" {
@@ -25,15 +31,13 @@ func GetTransaction(ctx *gin.Context) {
 			gin2.HttpResponse(ctx, "", err)
 			return
 		}
+		queryTxParams.ChainId = chain.ID
 	}
+
 	statusUint, err := strconv.ParseUint(status, 10, 64)
-	data, err := service.FindTransaction(&models.Transaction{
-		UserOperationHash: opHash,
-		TxHash:            txHash,
-		Sender:            address,
-		ChainId:           chain.ID,
-		Status:            uint(statusUint),
-	})
+	queryTxParams.Status = uint(statusUint)
+
+	data, err := service.FindTransaction(queryTxParams)
 	if err != nil {
 		gin2.HttpResponse(ctx, "", err)
 		return
