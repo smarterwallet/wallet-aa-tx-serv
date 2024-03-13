@@ -67,7 +67,7 @@ func GetEstimateFee(chainId int) (*models.EstimateFeeResponse, error) {
 		return nil, err
 	}
 	gasPrice, _ := new(big.Int).SetString(response.Result.(string)[2:], 16)
-	gasFeeBigInt := gasPrice.Mul(gasPrice, gasLimit)
+	gasFeeBigInt := new(big.Int).Mul(gasPrice, gasLimit)
 
 	result := new(big.Int)
 	nativeTokenDeciBigInt := result.Exp(big.NewInt(10), big.NewInt(int64(nativeToken.Decimal)), nil)
