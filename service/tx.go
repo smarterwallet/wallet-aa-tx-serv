@@ -89,10 +89,13 @@ func GetEstimateFee(chainId int) (*models.EstimateFeeResponse, error) {
 		PayFeeUSDValue: gasFeeDecimalUSD,
 		PayFeeByToken:  []models.TokenFee{},
 	}
-	feeResult.PayFeeByToken = append(feeResult.PayFeeByToken, models.TokenFee{
-		Token:      nativeToken,
-		NeedAmount: gasFeeDecimal,
-	})
+
+	if nativeToken.Fee == 1 {
+		feeResult.PayFeeByToken = append(feeResult.PayFeeByToken, models.TokenFee{
+			Token:      nativeToken,
+			NeedAmount: gasFeeDecimal,
+		})
+	}
 
 	// 计算其他token
 	for i, token := range chain.Tokens {
