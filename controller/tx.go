@@ -11,7 +11,7 @@ import (
 )
 
 func GetTransaction(ctx *gin.Context) {
-	chainName := ctx.Query("chainName")
+	chainIdStr := ctx.Query("chainId")
 	txHash := ctx.Query("txHash")
 	opHash := ctx.Query("opHash")
 	address := ctx.Query("address")
@@ -24,9 +24,14 @@ func GetTransaction(ctx *gin.Context) {
 	}
 
 	var chain *clientdto.Chain
-	var err error
-	if chainName != "" {
-		chain, err = service.GetChainByName(chainName)
+
+	if chainIdStr != "" {
+		chainId, err := strconv.Atoi(chainIdStr)
+		if err != nil {
+			gin2.HttpResponse(ctx, "", err)
+			return
+		}
+		chain, err = service.GetChainByChainId(chainId)
 		if err != nil {
 			gin2.HttpResponse(ctx, "", err)
 			return

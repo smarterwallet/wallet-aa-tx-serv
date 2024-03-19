@@ -11,15 +11,15 @@ import (
 
 var (
 	// TransactionStatusInit 交易状态初始化
-	TransactionStatusInit = uint(0)
+	TransactionStatusInit = uint(1)
 	// TransactionStatusSuccess 交易状态成功
-	TransactionStatusSuccess = uint(1)
+	TransactionStatusSuccess = uint(2)
 	// TransactionStatusFail 交易状态失败
-	TransactionStatusFail = uint(2)
+	TransactionStatusFail = uint(3)
 	// TransactionStatusRollback 交易所在区块回滚
-	TransactionStatusRollback = uint(3)
+	TransactionStatusRollback = uint(4)
 	// TransactionStatusUnKnow 交易状态无法判断
-	TransactionStatusUnKnow = uint(4)
+	TransactionStatusUnKnow = uint(5)
 
 	// TxSourceFromDemandAbstraction 交易类型来自需求抽象
 	TxSourceFromDemandAbstraction = uint(1)

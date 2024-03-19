@@ -2,6 +2,7 @@ package schedule
 
 import (
 	log "github.com/cihub/seelog"
+	"strings"
 	"wallet-aa-tx-serv/models"
 	"wallet-aa-tx-serv/service"
 	"wallet-aa-tx-serv/utils/common"
@@ -33,11 +34,11 @@ func PeriodicalUpdateStatusOfUserSendingTransaction() {
 			log.Error("fail to type assertion. (details.Result.(models.GetUserOperationByHashResult))")
 			return
 		}
-		info.BlockHash = opResult.BlockHash
+		info.BlockHash = strings.ToLower(opResult.BlockHash)
 		info.BlockNumber = uint(opResult.BlockNumber)
-		info.TxHash = opResult.TransactionHash
-		info.Sender = opResult.UserOperation.Sender
-		info.EntryPointAddress = opResult.EntryPoint
+		info.TxHash = strings.ToLower(opResult.TransactionHash)
+		info.Sender = strings.ToLower(opResult.UserOperation.Sender)
+		info.EntryPointAddress = strings.ToLower(opResult.EntryPoint)
 		info.UserOperation = &opResult.UserOperation
 
 		// get and update transaction status
@@ -54,6 +55,14 @@ func PeriodicalUpdateStatusOfUserSendingTransaction() {
 		}
 
 		resultStatus := common.ParseUint(receiptResult.Status)
+		switch resultStatus {
+		case 0:
+			resultStatus = models.TransactionStatusFail
+			break
+		case 1:
+			resultStatus = models.TransactionStatusSuccess
+			break
+		}
 		info.Status = resultStatus
 
 		// update transaction
