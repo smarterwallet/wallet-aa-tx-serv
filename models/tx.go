@@ -29,7 +29,8 @@ var (
 
 type SavedTransaction struct {
 	ChainId           int             `json:"chainId"`
-	TxSource          uint            `gorm:"not null;comment:交易来源" json:"txSource"`
+	TxSource          uint            `json:"txSource"`
+	TxType            uint            `json:"txType"`
 	UserOperationHash string          `json:"userOperationHash"`
 	ExtraData         json.RawMessage `json:"extraData"`
 }
@@ -61,7 +62,8 @@ type Transaction struct {
 	UserOperation     *UserOperation  `gorm:"-" json:"userOperation"`
 	UserOperationJson json.RawMessage `gorm:"comment:op详情;type:json" json:"userOperationJson"`
 	ExtraData         json.RawMessage `gorm:"comment:额外数据;type:json" json:"extraData"`
-	TxSource          uint            `gorm:"not null;comment:交易来源" json:"txSource"`
+	TxSource          uint            `gorm:"not null;comment:交易来源, 1-需求抽象, 2-直接转账, 3-自动交易" json:"txSource"`
+	TxType            uint            `gorm:"not null;comment:交易类型, 1-直接转账, 2-复杂交易" json:"txType"`
 	Status            uint            `gorm:"not null;comment:状态" json:"status"`
 }
 
